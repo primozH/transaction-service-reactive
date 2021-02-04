@@ -1,0 +1,3 @@
+CREATE USER truser WITH ENCRYPTED PASSWORD 'trpass';
+CREATE DATABASE transactions;
+GRANT ALL PRIVILEGES ON DATABASE transactions TO truser;
