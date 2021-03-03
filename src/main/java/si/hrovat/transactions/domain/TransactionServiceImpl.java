@@ -32,7 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Uni<List<Transaction>> findTransactions() {
-        return transactionRepository.findAll().collectItems().asList();
+        return transactionRepository.findAll().collect().asList();
     }
 
     @Override

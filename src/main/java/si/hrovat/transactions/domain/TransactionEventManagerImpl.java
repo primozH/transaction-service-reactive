@@ -21,10 +21,10 @@ public class TransactionEventManagerImpl implements TransactionEventManager {
 
     @Inject
     @Channel("transaction-events-out")
-    private Emitter<Transaction> emitter;
+    Emitter<Transaction> emitter;
 
     @Inject
-    private TransactionRepository transactionRepository;
+    TransactionRepository transactionRepository;
 
     @Override
     public Uni<Void> pushTransaction(Transaction transaction) {
@@ -38,11 +38,7 @@ public class TransactionEventManagerImpl implements TransactionEventManager {
     @Incoming("transaction-events-in")
     @Outgoing("transaction-events-processed")
     public Uni<Message<Transaction>> processTransaction(Message<Transaction> message) {
-        IncomingKafkaRecordMetadata<String, Transaction> metadata = message.getMetadata(IncomingKafkaRecordMetadata.class)
-                .orElse(null);
-        if (metadata != null) {
-            logger.info("Transaction id {}", metadata.getKey());
-        }
+        message.getMetadata(IncomingKafkaRecordMetadata.class).ifPresent(metadata -> logger.info("Transaction id {}", metadata.getKey()));
         Transaction transaction = message.getPayload();
         transaction.setStatus(TransactionStatus.ACCEPTED);
         return transactionRepository.save(transaction).map(message::withPayload);
